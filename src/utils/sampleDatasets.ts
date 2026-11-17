@@ -1,4 +1,8 @@
 import type { DataRow, PresetDatasetInfo } from '../types/data';
+import {
+  parseTallerCarteraRows,
+  parseTallerTelcoRows,
+} from './tallerClase2Data';
 
 function createRng(seed: number) {
   let state = seed >>> 0;
@@ -372,5 +376,67 @@ export const PRESET_DATASETS: PresetDatasetInfo[] = [
         'Evaluar la concentración de cartera, detectar cuentas con mora crítica y fijar alertas preventivas de cobranza.',
     },
     generate: generateB2BRows,
+  },
+  {
+    id: 'taller_clase2',
+    shortName: 'cartera y telco',
+    name: 'Taller clase 2 – cartera y telco',
+    sector: 'Banca / Cartera y Telecomunicaciones',
+    kindLabel: '2 bases · 852 y 250 filas',
+    subtitle:
+      'Carga simultáneamente cartera.csv (separador ; y decimal , con 852 clientes) y telco.csv (separador , y decimal . con 250 clientes) listas para los 16 pasos.',
+    rowCount: 852,
+    colCount: 9,
+    context: {
+      presetId: 'taller_clase2_cartera',
+      projectTitle: 'Taller clase 2 – Análisis descriptivo de cartera y telco',
+      sector: 'Cartera comercial y Telecomunicaciones',
+      unit: 'unidades',
+      question:
+        '¿Cómo se comportan las variables de ventas, cartera, retrasos y consumo telefónico en ambas bases del Taller clase 2?',
+      objective:
+        'Recorrer los 16 pasos de estadística descriptiva con las bases reales cartera y telco para diagnosticar calidad, dispersión, atípicos y cruces.',
+    },
+    generate: parseTallerCarteraRows,
+    bundleDatasets: [
+      {
+        presetId: 'taller_clase2_cartera',
+        shortName: 'cartera',
+        fileName: 'cartera.csv',
+        sourceKind: 'csv',
+        delimiterUsed: ';',
+        decimalUsed: 'comma',
+        context: {
+          presetId: 'taller_clase2_cartera',
+          projectTitle: 'Taller clase 2 – Base cartera',
+          sector: 'Cartera / Riesgo Comercial',
+          unit: 'unidades',
+          question:
+            '¿Qué perfil de antigüedad, ventas, pasivo sobre venta, cartera A/B y retrasos presentan los clientes de la base cartera?',
+          objective:
+            'Evaluar calidad de datos (como valores imposibles en MESES), dispersión, asimetría y relación entre variables financieras y retrasos.',
+        },
+        generate: parseTallerCarteraRows,
+      },
+      {
+        presetId: 'taller_clase2_telco',
+        shortName: 'telco',
+        fileName: 'telco.csv',
+        sourceKind: 'csv',
+        delimiterUsed: ',',
+        decimalUsed: 'dot',
+        context: {
+          presetId: 'taller_clase2_telco',
+          projectTitle: 'Taller clase 2 – Base telco',
+          sector: 'Telecomunicaciones',
+          unit: 'unidades',
+          question:
+            '¿Cómo se distribuyen los minutos, el puntaje (score) y la factura (bill) en los 250 registros de telco?',
+          objective:
+            'Analizar tendencia central, dispersión, atípicos y correlación entre minutos, score y facturación en la base telco.',
+        },
+        generate: parseTallerTelcoRows,
+      },
+    ],
   },
 ];

@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   Compass,
   Database,
+  Layers,
   Radio,
   ShoppingBag,
   TrendingUp,
@@ -61,6 +62,13 @@ const PRESET_THEME: Record<
     buttonActive: 'border-amber-700 bg-amber-700 text-white',
     sectorText: 'text-amber-700',
   },
+  taller_clase2: {
+    icon: Layers,
+    accentBar: 'from-violet-600 to-blue-600',
+    iconBox: 'border-violet-200 bg-violet-50 text-violet-700',
+    buttonActive: 'border-violet-700 bg-violet-700 text-white',
+    sectorText: 'text-violet-700',
+  },
 };
 
 export function Step01Context({
@@ -95,7 +103,7 @@ export function Step01Context({
               <div className="text-[11px] text-slate-300">Pasos guiados</div>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5">
-              <div className="font-mono text-base font-bold text-teal-300 tabular-nums">4</div>
+              <div className="font-mono text-base font-bold text-teal-300 tabular-nums">5</div>
               <div className="text-[11px] text-slate-300">Casos listos</div>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5">
@@ -272,7 +280,11 @@ export function Step01Context({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {PRESET_DATASETS.map((preset) => {
-            const isSelected = context.presetId === preset.id && hasData;
+            const isSelected =
+              hasData &&
+              (context.presetId === preset.id ||
+                (preset.id === 'taller_clase2' &&
+                  Boolean(context.presetId?.startsWith('taller_clase2'))));
             const theme = PRESET_THEME[preset.id];
             const Icon = theme.icon;
 

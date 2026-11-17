@@ -303,8 +303,19 @@ export interface WizardStepMeta {
   description: string;
 }
 
+export interface PresetBundleItem {
+  presetId: string;
+  shortName: string;
+  fileName: string;
+  sourceKind: 'csv' | 'excel' | 'preset';
+  delimiterUsed: ',' | ';' | '\t';
+  decimalUsed: 'dot' | 'comma';
+  context: BusinessContext;
+  generate: () => DataRow[];
+}
+
 export interface PresetDatasetInfo {
-  id: 'publicidad_co' | 'telecom' | 'retail' | 'b2b';
+  id: 'publicidad_co' | 'telecom' | 'retail' | 'b2b' | 'taller_clase2';
   shortName: string;
   name: string;
   sector: string;
@@ -314,6 +325,7 @@ export interface PresetDatasetInfo {
   colCount: number;
   context: BusinessContext;
   generate: () => DataRow[];
+  bundleDatasets?: PresetBundleItem[];
 }
 
 export interface DatasetWorkspace {

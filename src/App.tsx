@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  ChevronDown,
   Download,
   Menu,
   Sparkles,
@@ -269,6 +270,7 @@ function createWorkspaceFromRows(params: {
 export default function App() {
   const [currentStep, setCurrentStep] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [presetMenuOpen, setPresetMenuOpen] = useState(false);
 
   const [workspaces, setWorkspaces] = useState<DatasetWorkspace[]>([]);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null);
@@ -297,6 +299,46 @@ export default function App() {
   };
 
   const handleLoadPreset = (preset: PresetDatasetInfo) => {
+    setPresetMenuOpen(false);
+    if (preset.bundleDatasets && preset.bundleDatasets.length > 0) {
+      const created: DatasetWorkspace[] = [];
+      let firstWorkspaceId: string | null = null;
+      const now = Date.now();
+
+      preset.bundleDatasets.forEach((item, index) => {
+        const existingItem = workspaces.find(
+          (w) => w.context.presetId === item.presetId
+        );
+        if (existingItem) {
+          if (!firstWorkspaceId) firstWorkspaceId = existingItem.id;
+          return;
+        }
+        const rows = item.generate();
+        const cols = rows.length > 0 ? Object.keys(rows[0]) : [];
+        const newWs = createWorkspaceFromRows({
+          id: `ws-${now}-${index}-${item.presetId}`,
+          shortName: item.shortName,
+          fileName: item.fileName,
+          sourceKind: item.sourceKind,
+          delimiterUsed: item.delimiterUsed,
+          decimalUsed: item.decimalUsed,
+          context: { ...item.context },
+          rawRows: rows,
+          columns: cols,
+        });
+        created.push(newWs);
+        if (!firstWorkspaceId) firstWorkspaceId = newWs.id;
+      });
+
+      if (created.length > 0) {
+        setWorkspaces((prev) => [...prev, ...created]);
+      }
+      if (firstWorkspaceId) {
+        setActiveWorkspaceId(firstWorkspaceId);
+      }
+      return;
+    }
+
     const existing = workspaces.find(
       (w) => w.sourceKind === 'preset' && w.context.presetId === preset.id
     );
@@ -753,7 +795,7 @@ export default function App() {
           </nav>
 
           {/* Zone 3: Single Primary CTA */}
-          <div className="shrink-0">
+          <div className="relative shrink-0">
             {hasData ? (
               <button
                 type="button"
@@ -764,14 +806,54 @@ export default function App() {
                 <span>Exportar HTML</span>
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={() => handleLoadPreset(PRESET_DATASETS[0])}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-800 whitespace-nowrap"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Cargar caso ejemplo</span>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setPresetMenuOpen((prev) => !prev)}
+                  aria-expanded={presetMenuOpen}
+                  aria-haspopup="menu"
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-800 whitespace-nowrap"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Cargar caso ejemplo</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+
+                {presetMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setPresetMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                    <div
+                      role="menu"
+                      aria-label="Casos de ejemplo"
+                      className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg"
+                    >
+                      <div className="border-b border-slate-100 px-3.5 py-2 text-[11px] font-semibold text-slate-500">
+                        Elige un caso de ejemplo para cargar
+                      </div>
+                      {PRESET_DATASETS.map((preset) => (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          role="menuitem"
+                          onClick={() => handleLoadPreset(preset)}
+                          className="flex w-full flex-col items-start gap-0.5 px-3.5 py-2.5 text-left transition-colors hover:bg-blue-50/70"
+                        >
+                          <span className="text-xs font-semibold text-slate-900">
+                            {preset.name}
+                          </span>
+                          <span className="font-mono text-[11px] text-slate-500">
+                            {preset.shortName} · {preset.kindLabel}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
         </div>
