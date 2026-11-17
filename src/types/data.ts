@@ -318,6 +318,7 @@ export interface PresetDatasetInfo {
   id: 'publicidad_co' | 'telecom' | 'retail' | 'b2b' | 'taller_clase2';
   shortName: string;
   name: string;
+  recommended?: boolean;
   sector: string;
   kindLabel: string;
   subtitle: string;

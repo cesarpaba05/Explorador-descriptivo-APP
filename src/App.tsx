@@ -267,13 +267,53 @@ function createWorkspaceFromRows(params: {
   };
 }
 
+function createInitialBundleState(): {
+  workspaces: DatasetWorkspace[];
+  activeWorkspaceId: string | null;
+} {
+  const defaultPreset =
+    PRESET_DATASETS.find((p) => p.id === 'taller_clase2') || PRESET_DATASETS[0];
+  if (!defaultPreset?.bundleDatasets || defaultPreset.bundleDatasets.length === 0) {
+    return { workspaces: [], activeWorkspaceId: null };
+  }
+  const now = Date.now();
+  const initialWorkspaces = defaultPreset.bundleDatasets.map((item, index) => {
+    const rows = item.generate();
+    const cols = rows.length > 0 ? Object.keys(rows[0]) : [];
+    return createWorkspaceFromRows({
+      id: `ws-${now}-${index}-${item.presetId}`,
+      shortName: item.shortName,
+      fileName: item.fileName,
+      sourceKind: item.sourceKind,
+      delimiterUsed: item.delimiterUsed,
+      decimalUsed: item.decimalUsed,
+      context: { ...item.context },
+      rawRows: rows,
+      columns: cols,
+    });
+  });
+  const telcoWs =
+    initialWorkspaces.find((w) => w.shortName === 'telco') ||
+    initialWorkspaces[0] ||
+    null;
+  return {
+    workspaces: initialWorkspaces,
+    activeWorkspaceId: telcoWs ? telcoWs.id : null,
+  };
+}
+
 export default function App() {
+  const [initialBundle] = useState(createInitialBundleState);
   const [currentStep, setCurrentStep] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [presetMenuOpen, setPresetMenuOpen] = useState(false);
 
-  const [workspaces, setWorkspaces] = useState<DatasetWorkspace[]>([]);
-  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<DatasetWorkspace[]>(
+    initialBundle.workspaces
+  );
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(
+    initialBundle.activeWorkspaceId
+  );
   const [draftContext, setDraftContext] = useState<BusinessContext>(EMPTY_CONTEXT);
   const [draftShortName, setDraftShortName] = useState('base');
 
@@ -302,7 +342,7 @@ export default function App() {
     setPresetMenuOpen(false);
     if (preset.bundleDatasets && preset.bundleDatasets.length > 0) {
       const created: DatasetWorkspace[] = [];
-      let firstWorkspaceId: string | null = null;
+      const resolvedIds: Array<{ shortName: string; id: string }> = [];
       const now = Date.now();
 
       preset.bundleDatasets.forEach((item, index) => {
@@ -310,7 +350,7 @@ export default function App() {
           (w) => w.context.presetId === item.presetId
         );
         if (existingItem) {
-          if (!firstWorkspaceId) firstWorkspaceId = existingItem.id;
+          resolvedIds.push({ shortName: existingItem.shortName, id: existingItem.id });
           return;
         }
         const rows = item.generate();
@@ -327,14 +367,16 @@ export default function App() {
           columns: cols,
         });
         created.push(newWs);
-        if (!firstWorkspaceId) firstWorkspaceId = newWs.id;
+        resolvedIds.push({ shortName: newWs.shortName, id: newWs.id });
       });
 
       if (created.length > 0) {
         setWorkspaces((prev) => [...prev, ...created]);
       }
-      if (firstWorkspaceId) {
-        setActiveWorkspaceId(firstWorkspaceId);
+      const preferred =
+        resolvedIds.find((r) => r.shortName === 'telco') || resolvedIds[0];
+      if (preferred) {
+        setActiveWorkspaceId(preferred.id);
       }
       return;
     }
@@ -794,9 +836,69 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Zone 3: Single Primary CTA */}
-          <div className="relative shrink-0">
-            {hasData ? (
+          {/* Zone 3: Cargar caso ejemplo menu + Primary CTA */}
+          <div className="relative flex items-center gap-2 shrink-0">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setPresetMenuOpen((prev) => !prev)}
+                aria-expanded={presetMenuOpen}
+                aria-haspopup="menu"
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold shadow-xs whitespace-nowrap ${
+                  hasData
+                    ? 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'bg-blue-700 text-white hover:bg-blue-800'
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Cargar caso ejemplo</span>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+
+              {presetMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setPresetMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div
+                    role="menu"
+                    aria-label="Casos de ejemplo"
+                    className="absolute right-0 z-50 mt-2 w-88 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg"
+                  >
+                    <div className="border-b border-slate-100 px-3.5 py-2 text-[11px] font-semibold text-slate-500">
+                      Elige un caso de ejemplo para cargar
+                    </div>
+                    {PRESET_DATASETS.map((preset) => (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => handleLoadPreset(preset)}
+                        className="flex w-full flex-col items-start gap-0.5 px-3.5 py-2.5 text-left transition-colors hover:bg-blue-50/70"
+                      >
+                        <div className="flex w-full items-center justify-between gap-2">
+                          <span className="text-xs font-semibold text-slate-900">
+                            {preset.name}
+                          </span>
+                          {preset.recommended && (
+                            <span className="shrink-0 rounded border border-violet-200 bg-violet-50 px-1.5 py-0.5 text-[10px] font-bold text-violet-700">
+                              Recomendado
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-mono text-[11px] text-slate-500">
+                          {preset.shortName} · {preset.kindLabel}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {hasData && (
               <button
                 type="button"
                 onClick={handleDownloadHtml}
@@ -805,55 +907,6 @@ export default function App() {
                 <Download className="h-3.5 w-3.5" />
                 <span>Exportar HTML</span>
               </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setPresetMenuOpen((prev) => !prev)}
-                  aria-expanded={presetMenuOpen}
-                  aria-haspopup="menu"
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-800 whitespace-nowrap"
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Cargar caso ejemplo</span>
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </button>
-
-                {presetMenuOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setPresetMenuOpen(false)}
-                      aria-hidden="true"
-                    />
-                    <div
-                      role="menu"
-                      aria-label="Casos de ejemplo"
-                      className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg"
-                    >
-                      <div className="border-b border-slate-100 px-3.5 py-2 text-[11px] font-semibold text-slate-500">
-                        Elige un caso de ejemplo para cargar
-                      </div>
-                      {PRESET_DATASETS.map((preset) => (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          role="menuitem"
-                          onClick={() => handleLoadPreset(preset)}
-                          className="flex w-full flex-col items-start gap-0.5 px-3.5 py-2.5 text-left transition-colors hover:bg-blue-50/70"
-                        >
-                          <span className="text-xs font-semibold text-slate-900">
-                            {preset.name}
-                          </span>
-                          <span className="font-mono text-[11px] text-slate-500">
-                            {preset.shortName} · {preset.kindLabel}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
             )}
           </div>
         </div>

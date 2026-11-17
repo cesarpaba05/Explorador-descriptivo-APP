@@ -290,97 +290,10 @@ function generateB2BRows(): DataRow[] {
 
 export const PRESET_DATASETS: PresetDatasetInfo[] = [
   {
-    id: 'publicidad_co',
-    shortName: 'publicidad',
-    name: 'Inversión Publicitaria por Medio en Colombia (2010–2024)',
-    sector: 'Medios y Publicidad',
-    kindLabel: 'Serie de tiempo · 15 años',
-    subtitle:
-      'Inversión anual por medio (TV, digital, radio, prensa, revistas, exterior, cine) con caída en 2020 y total del mercado (~$5,45 billones).',
-    rowCount: 15,
-    colCount: 10,
-    context: {
-      presetId: 'publicidad_co',
-      projectTitle: 'Evolución de la inversión publicitaria por medio en Colombia',
-      sector: 'Medios y Publicidad',
-      unit: 'millones',
-      question:
-        '¿Cómo ha evolucionado la inversión publicitaria por medio en Colombia y qué estrategia debe seguir un medio como la radio?',
-      objective:
-        'Medir el crecimiento o contracción de cada medio entre 2010 y 2024, analizar su participación en el total del mercado y formular una estrategia competitiva para la radio frente al avance digital.',
-    },
-    generate: generatePublicidadColombiaRows,
-  },
-  {
-    id: 'telecom',
-    shortName: 'telco',
-    name: 'Telecomunicaciones · Retención y Consumo de Clientes',
-    sector: 'Telecomunicaciones',
-    kindLabel: 'Individuos · 250 clientes',
-    subtitle:
-      'Clientes móviles con plan, ciudad, consumo de datos, llamadas a soporte, factura mensual y cancelación (0/1).',
-    rowCount: 250,
-    colCount: 10,
-    context: {
-      presetId: 'telecom',
-      projectTitle: 'Diagnóstico de cancelación y consumo en telefonía móvil',
-      sector: 'Telecomunicaciones',
-      unit: 'pesos',
-      question:
-        '¿Qué factores de uso, facturación y atención al cliente se asocian con una mayor tasa de cancelación del servicio?',
-      objective:
-        'Caracterizar el consumo y facturación de los clientes e identificar segmentos críticos de fuga para enfocar campañas de retención.',
-    },
-    generate: generateTelecomRows,
-  },
-  {
-    id: 'retail',
-    shortName: 'retail',
-    name: 'Retail · Comercio Electrónico y Omnicanal',
-    sector: 'Retail / Comercio',
-    kindLabel: 'Individuos · 250 pedidos',
-    subtitle:
-      'Pedidos por canal web, app y tienda física con ticket promedio, proporción de descuento y recurrencia.',
-    rowCount: 250,
-    colCount: 10,
-    context: {
-      presetId: 'retail',
-      projectTitle: 'Análisis del ticket promedio y recurrencia omnicanal',
-      sector: 'Retail y Comercio Electrónico',
-      unit: 'pesos',
-      question:
-        '¿Cómo varía el monto de compra entre canales y categorías, y qué variables impulsan la recurrencia de clientes?',
-      objective:
-        'Entender la distribución del gasto por pedido, detectar compras atípicas de alto valor y comparar conversión por canal.',
-    },
-    generate: generateRetailRows,
-  },
-  {
-    id: 'b2b',
-    shortName: 'cartera',
-    name: 'Cartera B2B · Crédito y Recaudo Empresarial',
-    sector: 'Servicios Financieros / B2B',
-    kindLabel: 'Individuos · 250 empresas',
-    subtitle:
-      'Empresas clientes con cupo, saldo en cartera, uso del cupo (proporción), mora e incumplimiento.',
-    rowCount: 250,
-    colCount: 11,
-    context: {
-      presetId: 'b2b',
-      projectTitle: 'Perfilamiento descriptivo de riesgo en cartera comercial B2B',
-      sector: 'B2B / Crédito Comercial',
-      unit: 'millones',
-      question:
-        '¿Qué niveles de mora y uso del cupo distinguen a las empresas con riesgo de incumplimiento según su tamaño y sector?',
-      objective:
-        'Evaluar la concentración de cartera, detectar cuentas con mora crítica y fijar alertas preventivas de cobranza.',
-    },
-    generate: generateB2BRows,
-  },
-  {
     id: 'taller_clase2',
     shortName: 'cartera y telco',
     name: 'Taller clase 2 – cartera y telco',
+    recommended: true,
     sector: 'Banca / Cartera y Telecomunicaciones',
     kindLabel: '2 bases · 852 y 250 filas',
     subtitle:
@@ -438,5 +351,93 @@ export const PRESET_DATASETS: PresetDatasetInfo[] = [
         generate: parseTallerTelcoRows,
       },
     ],
+  },
+  {
+    id: 'publicidad_co',
+    shortName: 'publicidad',
+    name: 'Inversión Publicitaria por Medio en Colombia (2010–2024) (datos simulados)',
+    sector: 'Medios y Publicidad',
+    kindLabel: 'Serie de tiempo · 15 años',
+    subtitle:
+      'Inversión anual por medio (TV, digital, radio, prensa, revistas, exterior, cine) con caída en 2020 y total del mercado (~$5,45 billones).',
+    rowCount: 15,
+    colCount: 10,
+    context: {
+      presetId: 'publicidad_co',
+      projectTitle: 'Evolución de la inversión publicitaria por medio en Colombia',
+      sector: 'Medios y Publicidad',
+      unit: 'millones',
+      question:
+        '¿Cómo ha evolucionado la inversión publicitaria por medio en Colombia y qué estrategia debe seguir un medio como la radio?',
+      objective:
+        'Medir el crecimiento o contracción de cada medio entre 2010 y 2024, analizar su participación en el total del mercado y formular una estrategia competitiva para la radio frente al avance digital.',
+    },
+    generate: generatePublicidadColombiaRows,
+  },
+  {
+    id: 'telecom',
+    shortName: 'telco',
+    name: 'Telecomunicaciones · Retención y Consumo de Clientes (datos simulados)',
+    sector: 'Telecomunicaciones',
+    kindLabel: 'Individuos · 250 clientes',
+    subtitle:
+      'Clientes móviles con plan, ciudad, consumo de datos, llamadas a soporte, factura mensual y cancelación (0/1).',
+    rowCount: 250,
+    colCount: 10,
+    context: {
+      presetId: 'telecom',
+      projectTitle: 'Diagnóstico de cancelación y consumo en telefonía móvil',
+      sector: 'Telecomunicaciones',
+      unit: 'pesos',
+      question:
+        '¿Qué factores de uso, facturación y atención al cliente se asocian con una mayor tasa de cancelación del servicio?',
+      objective:
+        'Caracterizar el consumo y facturación de los clientes e identificar segmentos críticos de fuga para enfocar campañas de retención.',
+    },
+    generate: generateTelecomRows,
+  },
+  {
+    id: 'retail',
+    shortName: 'retail',
+    name: 'Retail · Comercio Electrónico y Omnicanal (datos simulados)',
+    sector: 'Retail / Comercio',
+    kindLabel: 'Individuos · 250 pedidos',
+    subtitle:
+      'Pedidos por canal web, app y tienda física con ticket promedio, proporción de descuento y recurrencia.',
+    rowCount: 250,
+    colCount: 10,
+    context: {
+      presetId: 'retail',
+      projectTitle: 'Análisis del ticket promedio y recurrencia omnicanal',
+      sector: 'Retail y Comercio Electrónico',
+      unit: 'pesos',
+      question:
+        '¿Cómo varía el monto de compra entre canales y categorías, y qué variables impulsan la recurrencia de clientes?',
+      objective:
+        'Entender la distribución del gasto por pedido, detectar compras atípicas de alto valor y comparar conversión por canal.',
+    },
+    generate: generateRetailRows,
+  },
+  {
+    id: 'b2b',
+    shortName: 'cartera',
+    name: 'Cartera B2B · Crédito y Recaudo Empresarial (datos simulados)',
+    sector: 'Servicios Financieros / B2B',
+    kindLabel: 'Individuos · 250 empresas',
+    subtitle:
+      'Empresas clientes con cupo, saldo en cartera, uso del cupo (proporción), mora e incumplimiento.',
+    rowCount: 250,
+    colCount: 11,
+    context: {
+      presetId: 'b2b',
+      projectTitle: 'Perfilamiento descriptivo de riesgo en cartera comercial B2B',
+      sector: 'B2B / Crédito Comercial',
+      unit: 'millones',
+      question:
+        '¿Qué niveles de mora y uso del cupo distinguen a las empresas con riesgo de incumplimiento según su tamaño y sector?',
+      objective:
+        'Evaluar la concentración de cartera, detectar cuentas con mora crítica y fijar alertas preventivas de cobranza.',
+    },
+    generate: generateB2BRows,
   },
 ];

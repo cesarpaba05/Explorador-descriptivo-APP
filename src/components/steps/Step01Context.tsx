@@ -308,8 +308,15 @@ export function Step01Context({
                         {preset.shortName} · {preset.kindLabel} · {formatCOInt(preset.colCount)} col.
                       </span>
                     </div>
-                    <div className={`text-xs font-semibold ${theme.sectorText}`}>
-                      {preset.sector}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className={`text-xs font-semibold ${theme.sectorText}`}>
+                        {preset.sector}
+                      </div>
+                      {preset.recommended && (
+                        <span className="rounded border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">
+                          Recomendado
+                        </span>
+                      )}
                     </div>
                     <h4 className="mt-0.5 text-sm font-semibold text-slate-900">
                       {preset.name}
