@@ -1,0 +1,6 @@
+{
+  "name": "Explorador Descriptivo de Datos",
+  "description": "Asistente paso a paso para análisis descriptivo de datos siguiendo la metodología CRISP-DM, 100% en el navegador.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
